@@ -1,4 +1,4 @@
-(defproject reticulum "0.0.1-SNAPSHOT"
+(defproject io.isaachodes/reticulum "0.0.1-SNAPSHOT"
   :description "Extensible extended finite state machines."
   :dependencies [[org.clojure/clojure "1.5.1"]
 
