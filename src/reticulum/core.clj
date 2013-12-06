@@ -2,21 +2,15 @@
   "This namespace exports functions for sending events to asynchronous
    extended finite state machines. They mostly conform to the UML extended FSM
    spec, with small deviations for what I percieve to be an easier time
-   reasoning about them."
+   reasoning about them.
+
+   More information can be found in /docs/FSM.md.
+   "
   (:require [reticulum.tree-nav :refer :all]
             [clojure.core.async :refer [<! >! >!! <!! chan go go-loop
                                         thread timeout alt!]]
             [schema.core        :as sc]))
 
-
-;; TODO
-;; 1) Better documentation... structure of FSM, semantics
-
-;; An action takes a context {current-state-name ...} and a callback
-;; function. This means that  actions can be asynchronously executing, or running
-;; in another thread or even another machine entirely; when the action is done,
-;; it is expected to call the callback with a boolean indicating if the action
-;; sequence currently being executed should continue or not, and the new context.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

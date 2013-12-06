@@ -77,7 +77,8 @@
              :actions {:enter [#(%2 false (update-in %1 [:number-of-events] inc))]}
              :states [{:name "D"
                        ;; shouldn't reach this; enter action in C ss'd rest of actions
-                       :actions {:enter [#(%2 true (update-in %1 [:number-of-events] inc))]}}]}]
+                       :actions
+                       {:enter [#(%2 true (update-in %1 [:number-of-events] inc))]}}]}]
    :actions {:event [(fn [state return]
                        (return true
                                (merge state {:number-of-events 1
@@ -103,5 +104,6 @@
                        [#(%2 true (update-in %1 [:events] conj "Entered C"))]}
              :states [{:name "D"
                        :actions {:enter
-                                 [#(%2 true (update-in %1 [:events] conj "Entered D"))]}}]}]
+                                 [#(%2 true (update-in %1 [:events] conj "Entered D"))]
+                                 }}]}]
    :actions {:event [#(%2 true (assoc % :current-state-name "C" :events []))]}})
