@@ -6,7 +6,7 @@
 (defn zip [& colls] (apply map vector colls))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;; Generic tree functions 
+;;;;;;;;;; ## Generic tree functions 
 
 (defn breadth-first-search
   "Breadth first search on a tree structure, returning a lazy sequence of trees

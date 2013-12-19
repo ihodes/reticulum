@@ -14,7 +14,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;; Utilities
+;;;;;;;;;; ## Utilities
 (defn get-state-with
   "Finds single state within a FSM using breadth-first-search by matching on
    predicate."
@@ -42,7 +42,7 @@
  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;; Execution implementation, plumbing.
+;;;;;;;;;; ## Execution implementation, plumbing.
 (defn- execute-action!
   "Executes the given actions with the given state. Returns updated state.
 
@@ -108,7 +108,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;; Public
+;;;;;;;;;; ## FSM API
 (defn send!
   "Sends the event and associated arguments to the FSM instance specified by 
    context, including key current-state-name, designating the current state

@@ -22,7 +22,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;; Public
+;;;;;;;;;; ## Validation API
 
 (defn validate-syntactically-correct-state
   "Verifies that the `candidate` FSM is syntactically correct. 
