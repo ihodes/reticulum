@@ -7,9 +7,7 @@
    More information can be found in /docs/FSM.md.
    "
   (:require [reticulum.tree-nav :refer :all]
-            [clojure.core.async :refer [<! >! >!! <!! chan go go-loop
-                                        thread timeout alt!]]
-            [schema.core        :as sc]))
+            [clojure.core.async :refer [<! >! >!! <!! chan go go-loop]]))
 
 
 
@@ -61,7 +59,7 @@
   [fsm {:keys [current-state-name] :as context} event-seq out]
   (let [chain (chan 1)]
     (if-not (state-in? current-state-name fsm)
-      (throw (Exception. (str current-state-name
+      (throw (Exception. (str "State named \"" current-state-name "\""
                               " does not exist within this FSM: "
                               "invalid transition."))))
     (>!! chain [true context])
@@ -109,6 +107,21 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;; ## FSM API
+(defn initialize!
+  "Transitions the FSM through the root state to the initial state, returning
+   the modified context and executing all enter actions along the way (including
+   those, if any, of the root state."
+  ([fsm] (initialize! fsm {}))
+  ([fsm context]
+     (let [init-state-name (:name (get-initial-state-for fsm))
+           init-name?      (comp #{init-state-name} :name)
+           root-to-init    (path-to init-name? :states fsm)
+           actions         (mapcat #(get-in % [:actions :enter] []) root-to-init)
+           out             (chan)
+           context         (assoc context :current-state-name init-state-name)]
+       (execute-event-sequence! fsm context actions out)))
+  ([fsm context synchronous?] (<!! (initialize! fsm context))))
+
 (defn send!
   "Sends the event and associated arguments to the FSM instance specified by 
    context, including key current-state-name, designating the current state
@@ -124,10 +137,9 @@
    in lieu of immediately returning the context map."
   ([fsm {:keys [current-state-name contexts] :as context} event]
      (let [curr-name?   (comp #{current-state-name} :name)
-           current      (get-state-with curr-name? fsm)
-           state        (assoc context :event event)
            curr-to-root (reverse (path-to curr-name? :states fsm))
            events       (mapcat #(get-in % [:actions :event] []) curr-to-root)
+           context      (assoc context :event event)
            out          (chan)]
        (execute-event-sequence! fsm context events out)))
-  ([fsm context event sync] (<!! (send! fsm context event))))
+  ([fsm context event synchronous?] (<!! (send! fsm context event))))

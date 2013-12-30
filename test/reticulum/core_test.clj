@@ -7,9 +7,11 @@
 
 (declare trans-fsm)
 (deftest transition
-  (testing "Ensure that the FSM transitions when it should."
-    (let [context   {:current-state-name "A"}
+  (testing "Ensure that the FSM initialized and transitioned as it should."
+    (let [context   (<!! (initialize! trans-fsm))
           new-state (<!! (send! trans-fsm context {:name "Boo!"}))]
+      (is (= "A" (:current-state-name context)))
+      (is (= "Initialized!" (:message context)))
       (is (= "D" (:current-state-name new-state))))))
 
 (declare context-fsm)
@@ -41,8 +43,8 @@
 (deftest exit-enter-order
   (testing "Ensure that the exit & enter events execute in the correct order."
     (let [context   {:current-state-name "A"}
-          new-state (<!! (send! order-exit-enter-fsm context {:name "Boo!"}))]
-        (is (= ["Exited A" "Entered C" "Entered D"] (:events new-state))))))
+          new-ctx (<!! (send! order-exit-enter-fsm context {:name "Boo!"}))]
+        (is (= ["Exited A" "Entered C" "Entered D"] (:events new-ctx))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -50,8 +52,10 @@
 (def trans-fsm 
   {:name "Root" :initial "A" :states [{:name "A"} {:name "C" :initial "D"
                                                    :states [{:name "D"}]}]
-   :actions {:event [(fn [state return]
-                       (return true (assoc state :current-state-name "C")))]}})
+   :actions {:enter [(fn [ctx return]
+                       (return true (assoc ctx :message "Initialized!")))]
+             :event [(fn [ctx return]
+                       (return true (assoc ctx :current-state-name "C")))]}})
 
 (def context-fsm 
   {:name "Root"
@@ -65,9 +69,9 @@
              :states [{:name "D"
                        :actions {:enter
                                  [#(%2 true (merge %1 {:d-string "Entered D"}))]}}]}]
-   :actions {:event [(fn [state return]
-                       (return true (merge state {:root-string "Event in Root"
-                                                  :current-state-name "C"})))]}})
+   :actions {:event [(fn [ctx return]
+                       (return true (merge ctx {:root-string "Event in Root"
+                                                :current-state-name "C"})))]}})
 
 (def ss-fsm 
   {:name "Root" :initial "A"
@@ -79,14 +83,14 @@
                        ;; shouldn't reach this; enter action in C ss'd rest of actions
                        :actions
                        {:enter [#(%2 true (update-in %1 [:number-of-events] inc))]}}]}]
-   :actions {:event [(fn [state return]
+   :actions {:event [(fn [ctx return]
                        (return true
-                               (merge state {:number-of-events 1
-                                             :current-state-name "C"})))
-                     (fn [state return]
+                               (merge ctx {:number-of-events 1
+                                           :current-state-name "C"})))
+                     (fn [ctx return]
                        (return true ;; should not reach this; transition ss's remaining
                                     ;; events
-                               (merge state {:ERROR true})))]}})
+                               (merge ctx {:ERROR true})))]}})
 
 (def order-fsm
   {:name "Root"
