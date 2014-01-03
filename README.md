@@ -5,7 +5,7 @@ An extensible, asynchronous, extended finite state machine library designed to m
 ## Install
 
 ```clojure
-[io.isaachodes/reticulum "0.0.1-SNAPSHOT"]
+[io.isaachodes/reticulum "0.1.0"]
 ```
 
 ## Documentation
